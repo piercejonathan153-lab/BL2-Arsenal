@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>BL2 Arsenal Launcher</title>
+<style>
+  :root {
+    --bg: #15171c; --panel: #1e2128; --panel2: #262a33; --line: #2f3440;
+    --text: #e8eaee; --muted: #9aa1ae; --accent: #f2b705; --accent-ink: #1a1400;
+    --good: #6fcf7f; --bad: #ef6f62; --warn: #f2b705;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
+    font: 14px/1.45 "Segoe UI", system-ui, sans-serif; overflow: hidden; user-select: none; }
+  .app { display: grid; grid-template-columns: 1fr 360px; height: 100%; }
+  .main { padding: 28px 32px 20px; display: flex; flex-direction: column; min-width: 0;
+    background: radial-gradient(1200px 500px at -10% -20%, #2a2410 0%, transparent 55%), var(--bg); }
+  .brand { font-family: Bahnschrift, "Segoe UI", sans-serif; font-weight: 700; font-size: 46px;
+    letter-spacing: 1px; line-height: 1; color: var(--accent); text-transform: uppercase; }
+  .brand span { color: var(--text); }
+  .tag { color: var(--muted); margin-top: 6px; }
+  .status { margin: 26px 0 0; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+  .row { display: grid; grid-template-columns: 22px 150px 1fr; align-items: center; padding: 11px 14px;
+    border-top: 1px solid var(--line); }
+  .row:first-child { border-top: 0; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
+  .dot.ok { background: var(--good); } .dot.bad { background: var(--bad); } .dot.warn { background: var(--warn); }
+  .row .k { color: var(--muted); }
+  .row .v { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .v a { color: var(--accent); cursor: pointer; text-decoration: underline; }
+  .actions { display: flex; gap: 12px; margin-top: 22px; align-items: stretch; }
+  button { font: inherit; color: var(--text); background: var(--panel2); border: 1px solid var(--line);
+    border-radius: 8px; padding: 10px 16px; cursor: pointer; }
+  button:hover:not(:disabled) { border-color: #4a5160; background: #2d323c; }
+  button:disabled { opacity: .45; cursor: default; }
+  .play { font-family: Bahnschrift, "Segoe UI", sans-serif; font-size: 22px; font-weight: 700; letter-spacing: 2px;
+    background: var(--accent); color: var(--accent-ink); border: 0; padding: 14px 44px; }
+  .play:hover:not(:disabled) { background: #ffc61a; }
+  .primary { font-weight: 600; padding: 14px 22px; }
+  .primary.hot { background: #3a3110; border-color: var(--accent); color: var(--accent); }
+  .progress { height: 4px; background: var(--panel2); border-radius: 2px; margin-top: 14px; overflow: hidden; visibility: hidden; }
+  .progress i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+  .more { margin-top: auto; display: flex; flex-wrap: wrap; gap: 8px; padding-top: 18px; }
+  .more button { padding: 7px 12px; font-size: 13px; }
+  .more .danger:hover:not(:disabled) { border-color: var(--bad); color: var(--bad); }
+  .side { background: var(--panel); border-left: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+  .side h3 { margin: 0; padding: 18px 20px 8px; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+  .notes { padding: 0 20px 10px; max-height: 45%; overflow: auto; }
+  .notes ul { margin: 0; padding-left: 18px; } .notes li { margin: 4px 0; }
+  .notes .ver { color: var(--accent); font-weight: 600; margin-bottom: 4px; }
+  .log { flex: 1; margin: 0 12px 12px; padding: 10px 12px; background: var(--bg); border: 1px solid var(--line);
+    border-radius: 8px; overflow: auto; font: 12.5px/1.5 Consolas, monospace; color: #c9ced8; user-select: text; }
+  .log div { white-space: pre-wrap; }
+  .foot { padding: 8px 20px 12px; color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; }
+  .foot a { color: var(--muted); cursor: pointer; } .foot a:hover { color: var(--accent); }
+  ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-thumb { background: #3a404c; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="main">
+    <div class="brand">BL2 <span>Arsenal</span></div>
+    <div class="tag">140 Borderlands 2 guns, shields and grenades for The Pre-Sequel</div>
+
+    <div class="status">
+      <div class="row"><i class="dot" id="d-tps"></i><span class="k">Pre-Sequel</span><span class="v" id="v-tps">Looking...</span></div>
+      <div class="row"><i class="dot" id="d-sdk"></i><span class="k">Mod manager</span><span class="v" id="v-sdk"></span></div>
+      <div class="row"><i class="dot" id="d-bl2"></i><span class="k">Borderlands 2</span><span class="v" id="v-bl2"></span></div>
+      <div class="row"><i class="dot" id="d-ver"></i><span class="k">BL2 Arsenal</span><span class="v" id="v-ver"></span></div>
+    </div>
+
+    <div class="actions">
+      <button class="play" id="b-play">PLAY</button>
+      <button class="primary" id="b-main">Install</button>
+    </div>
+    <div class="progress" id="prog"><i></i></div>
+
+    <div class="more">
+      <button id="b-check">Check for updates</button>
+      <button id="b-file">Install from file...</button>
+      <button id="b-game">Change game folder...</button>
+      <button id="b-open">Open mod folder</button>
+      <button id="b-launcher" style="display:none"></button>
+      <button class="danger" id="b-uninstall">Uninstall</button>
+    </div>
+  </div>
+
+  <div class="side">
+    <h3>Patch notes</h3>
+    <div class="notes" id="notes"><div style="color:var(--muted)">Checking...</div></div>
+    <h3>Activity</h3>
+    <div class="log" id="log"></div>
+    <div class="foot"><span id="lv"></span><a id="gh">GitHub</a></div>
+  </div>
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  let S = null;
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  function newer(a, b) {
+    const p = s => (String(s || '').match(/(\d+)\.(\d+)\.(\d+)/) || []).slice(1).map(Number);
+    const x = p(a), y = p(b);
+    if (!x.length) return false; if (!y.length) return true;
+    for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] > y[i];
+    return false;
+  }
+  function setRow(key, ok, html) {
+    $('d-' + key).className = 'dot ' + (ok === true ? 'ok' : ok === false ? 'bad' : ok === 'warn' ? 'warn' : '');
+    $('v-' + key).innerHTML = html;
+  }
+  function log(msg) {
+    const d = document.createElement('div'); d.textContent = msg;
+    $('log').appendChild(d); $('log').scrollTop = 1e9;
+  }
+
+  function render(s) {
+    S = s;
+    setRow('tps', s.tpsOk, s.tpsOk ? esc(s.tps) : 'Not found &mdash; use &ldquo;Change game folder&rdquo;');
+    setRow('sdk', s.tpsOk ? s.sdkOk : null, !s.tpsOk ? '&mdash;' : s.sdkOk ? 'willow2-mod-manager installed'
+      : 'Missing &mdash; <a data-url="https://github.com/bl-sdk/willow2-mod-manager/releases">download it</a>');
+    setRow('bl2', !!s.bl2, s.bl2 ? esc(s.bl2) : 'Not found &mdash; the mod builds its textures and sounds from your BL2 install');
+
+    const inst = s.installed, latest = s.latest;
+    const outdated = inst && latest && newer(latest, inst);
+    let ver = !s.tpsOk ? '&mdash;' : inst ? 'v' + esc(inst) : 'Not installed';
+    if (inst && latest && !outdated) ver += ' &middot; up to date';
+    if (outdated) ver += ' &middot; <b style="color:var(--accent)">v' + esc(latest) + ' available</b>';
+    setRow('ver', !s.tpsOk ? null : !inst ? false : outdated ? 'warn' : s.checked ? true : null, ver);
+
+    const main = $('b-main');
+    main.classList.toggle('hot', !inst || outdated);
+    main.textContent = !inst ? (latest ? 'Install v' + latest : 'Install') : outdated ? 'Update to v' + latest : 'Repair';
+    main.disabled = s.busy || !s.tpsOk;
+    $('b-play').disabled = !s.tpsOk;
+    for (const id of ['b-check', 'b-file', 'b-game', 'b-uninstall', 'b-launcher']) $(id).disabled = s.busy;
+    $('b-file').disabled = s.busy || !s.tpsOk;
+    $('b-open').disabled = !s.tpsOk;
+    $('b-uninstall').disabled = s.busy || !inst;
+    $('b-launcher').style.display = s.launcherUpdate ? '' : 'none';
+    $('b-launcher').textContent = 'Update launcher to v' + s.launcherUpdate;
+    $('lv').textContent = 'Launcher v' + s.launcherVersion;
+
+    if (!s.checked && !s.busy) $('notes').innerHTML = '<div style="color:var(--muted)">Not checked yet</div>';
+    if (s.checked) {
+      $('notes').innerHTML = '<div class="ver">v' + esc(latest) + '</div><ul>' +
+        (s.notes || []).map(n => '<li>' + esc(n) + '</li>').join('') + '</ul>';
+    }
+  }
+
+  window.onEvent = ev => {
+    if (ev.kind === 'state') render(ev.data);
+    else if (ev.kind === 'log') log(ev.data);
+    else if (ev.kind === 'progress') {
+      const p = $('prog');
+      p.style.visibility = ev.data < 0 ? 'hidden' : 'visible';
+      p.firstElementChild.style.width = Math.max(0, ev.data) * 100 + '%';
+    }
+  };
+
+  document.addEventListener('click', e => {
+    const a = e.target.closest('[data-url]');
+    if (a) openUrl(a.dataset.url);
+  });
+  $('gh').onclick = () => openUrl('https://github.com/piercejonathan153-lab/BL2-Arsenal');
+  $('b-play').onclick = () => play();
+  $('b-main').onclick = () => installLatest();
+  $('b-check').onclick = () => checkUpdates();
+  $('b-file').onclick = () => installFile();
+  $('b-game').onclick = () => chooseGame();
+  $('b-open').onclick = () => openModFolder();
+  $('b-uninstall').onclick = () => uninstall();
+  $('b-launcher').onclick = () => updateLauncher();
+  document.addEventListener('contextmenu', e => e.preventDefault());
+
+  getState().then(s => { render(s); ready(); });
+</script>
+</body>
+</html>
