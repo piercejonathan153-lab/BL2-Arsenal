@@ -12,11 +12,56 @@ import (
 )
 
 var (
-	user32           = windows.NewLazySystemDLL("user32.dll")
-	comdlg32         = windows.NewLazySystemDLL("comdlg32.dll")
-	procMessageBoxW  = user32.NewProc("MessageBoxW")
-	procGetOpenFileW = comdlg32.NewProc("GetOpenFileNameW")
+	user32            = windows.NewLazySystemDLL("user32.dll")
+	comdlg32          = windows.NewLazySystemDLL("comdlg32.dll")
+	procMessageBoxW   = user32.NewProc("MessageBoxW")
+	procGetOpenFileW  = comdlg32.NewProc("GetOpenFileNameW")
+	procGetDpiForWnd  = user32.NewProc("GetDpiForWindow")
+	procGetWindowRect = user32.NewProc("GetWindowRect")
+	procSetWindowPos  = user32.NewProc("SetWindowPos")
+	procSysParamInfo  = user32.NewProc("SystemParametersInfoW")
 )
+
+type rect struct{ Left, Top, Right, Bottom int32 }
+
+func workArea() rect {
+	var r rect
+	procSysParamInfo.Call(0x0030 /* SPI_GETWORKAREA */, 0, uintptr(unsafe.Pointer(&r)), 0)
+	return r
+}
+
+// scaledSize turns a size in CSS pixels into window pixels for the window's monitor DPI, shrunk to fit the screen.
+func scaledSize(hwnd uintptr, w, h int) (int, int) {
+	dpi := uintptr(96)
+	if procGetDpiForWnd.Find() == nil {
+		if d, _, _ := procGetDpiForWnd.Call(hwnd); d > 0 {
+			dpi = d
+		}
+	}
+	scale := float64(dpi) / 96
+	wa := workArea()
+	if aw, ah := float64(wa.Right-wa.Left)*0.95, float64(wa.Bottom-wa.Top-40)*0.95; aw > 0 && ah > 0 {
+		if f := aw / (float64(w) * scale); f < 1 {
+			scale *= f
+		}
+		if f := ah / (float64(h) * scale); f < 1 {
+			scale *= f
+		}
+	}
+	return int(float64(w)*scale + .5), int(float64(h)*scale + .5)
+}
+
+func centerWindow(hwnd uintptr) {
+	var r rect
+	procGetWindowRect.Call(hwnd, uintptr(unsafe.Pointer(&r)))
+	wa := workArea()
+	x := wa.Left + (wa.Right-wa.Left-(r.Right-r.Left))/2
+	y := wa.Top + (wa.Bottom-wa.Top-(r.Bottom-r.Top))/2
+	if y < wa.Top {
+		y = wa.Top
+	}
+	procSetWindowPos.Call(hwnd, 0, uintptr(x), uintptr(y), 0, 0, 0x0001|0x0004|0x0010) // NOSIZE|NOZORDER|NOACTIVATE
+}
 
 func steamRoots() []string {
 	var roots []string

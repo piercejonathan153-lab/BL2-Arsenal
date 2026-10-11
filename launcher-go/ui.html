@@ -5,61 +5,68 @@
 <title>BL2 Arsenal Launcher</title>
 <style>
   :root {
-    --bg: #15171c; --panel: #1e2128; --panel2: #262a33; --line: #2f3440;
-    --text: #e8eaee; --muted: #9aa1ae; --accent: #f2b705; --accent-ink: #1a1400;
-    --good: #6fcf7f; --bad: #ef6f62; --warn: #f2b705;
+    --glass: rgba(16, 18, 24, .78); --glass2: rgba(34, 38, 47, .82); --line: rgba(255,255,255,.09);
+    --text: #eef0f3; --muted: #a3aab6; --accent: #f7b20a; --accent2: #ff8a00; --accent-ink: #1a1000;
+    --good: #6fdc84; --bad: #ff6f61; --warn: #f7b20a;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
+  html, body { margin: 0; height: 100%; color: var(--text); background: #0b0d11;
     font: 14px/1.45 "Segoe UI", system-ui, sans-serif; overflow: hidden; user-select: none; }
-  .app { display: grid; grid-template-columns: 1fr 360px; height: 100%; }
-  .main { padding: 28px 32px 20px; display: flex; flex-direction: column; min-width: 0;
-    background: radial-gradient(1200px 500px at -10% -20%, #2a2410 0%, transparent 55%), var(--bg); }
-  .brand { font-family: Bahnschrift, "Segoe UI", sans-serif; font-weight: 700; font-size: 46px;
-    letter-spacing: 1px; line-height: 1; color: var(--accent); text-transform: uppercase; }
-  .brand span { color: var(--text); }
-  .tag { color: var(--muted); margin-top: 6px; }
-  .status { margin: 26px 0 0; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
-  .row { display: grid; grid-template-columns: 22px 150px 1fr; align-items: center; padding: 11px 14px;
+  body { background: url({{BG}}) center 40% / cover no-repeat, #0b0d11; }
+  .app { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 340px; height: 100%;
+    background: linear-gradient(90deg, rgba(8,10,14,.92) 0%, rgba(8,10,14,.78) 38%, rgba(8,10,14,.25) 70%, rgba(8,10,14,.55) 100%); }
+  .main { padding: 18px 26px 16px; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+  .logo { width: min(380px, 100%); height: auto; display: block; margin: 0 0 2px -6px;
+    filter: drop-shadow(0 6px 18px rgba(0,0,0,.6)); }
+  .tag { color: #d3d7de; text-shadow: 0 1px 3px #000; font-size: 13.5px; }
+  .status { margin: 14px 0 0; background: var(--glass); border: 1px solid var(--line); border-radius: 10px;
+    backdrop-filter: blur(6px); max-width: 560px; }
+  .row { display: grid; grid-template-columns: 18px 118px minmax(0, 1fr); align-items: center; padding: 8px 12px;
     border-top: 1px solid var(--line); }
   .row:first-child { border-top: 0; }
   .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
-  .dot.ok { background: var(--good); } .dot.bad { background: var(--bad); } .dot.warn { background: var(--warn); }
+  .dot.ok { background: var(--good); box-shadow: 0 0 6px var(--good); }
+  .dot.bad { background: var(--bad); box-shadow: 0 0 6px var(--bad); }
+  .dot.warn { background: var(--warn); box-shadow: 0 0 6px var(--warn); }
   .row .k { color: var(--muted); }
   .row .v { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .row .v a { color: var(--accent); cursor: pointer; text-decoration: underline; }
-  .actions { display: flex; gap: 12px; margin-top: 22px; align-items: stretch; }
-  button { font: inherit; color: var(--text); background: var(--panel2); border: 1px solid var(--line);
-    border-radius: 8px; padding: 10px 16px; cursor: pointer; }
-  button:hover:not(:disabled) { border-color: #4a5160; background: #2d323c; }
+  .actions { display: flex; gap: 10px; margin-top: 16px; align-items: stretch; }
+  button { font: inherit; color: var(--text); background: var(--glass2); border: 1px solid var(--line);
+    border-radius: 8px; padding: 9px 14px; cursor: pointer; backdrop-filter: blur(6px); }
+  button:hover:not(:disabled) { border-color: rgba(255,255,255,.28); background: rgba(52,58,70,.9); }
   button:disabled { opacity: .45; cursor: default; }
-  .play { font-family: Bahnschrift, "Segoe UI", sans-serif; font-size: 22px; font-weight: 700; letter-spacing: 2px;
-    background: var(--accent); color: var(--accent-ink); border: 0; padding: 14px 44px; }
-  .play:hover:not(:disabled) { background: #ffc61a; }
-  .primary { font-weight: 600; padding: 14px 22px; }
-  .primary.hot { background: #3a3110; border-color: var(--accent); color: var(--accent); }
-  .progress { height: 4px; background: var(--panel2); border-radius: 2px; margin-top: 14px; overflow: hidden; visibility: hidden; }
+  .play { font-family: Bahnschrift, "Segoe UI", sans-serif; font-size: 22px; font-weight: 700; letter-spacing: 3px;
+    background: linear-gradient(180deg, var(--accent), var(--accent2)); color: var(--accent-ink); border: 0;
+    padding: 12px 46px; box-shadow: 0 6px 20px rgba(247,140,10,.35); }
+  .play:hover:not(:disabled) { background: linear-gradient(180deg, #ffc533, #ff9a1f); }
+  .primary { font-weight: 600; padding: 12px 20px; }
+  .primary.hot { border-color: var(--accent); color: var(--accent); }
+  .progress { height: 4px; background: rgba(255,255,255,.1); border-radius: 2px; margin-top: 10px; overflow: hidden;
+    visibility: hidden; max-width: 560px; }
   .progress i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
-  .more { margin-top: auto; display: flex; flex-wrap: wrap; gap: 8px; padding-top: 18px; }
-  .more button { padding: 7px 12px; font-size: 13px; }
+  .more { margin-top: auto; display: flex; flex-wrap: wrap; gap: 7px; padding-top: 12px; }
+  .more button { padding: 6px 11px; font-size: 12.5px; }
   .more .danger:hover:not(:disabled) { border-color: var(--bad); color: var(--bad); }
-  .side { background: var(--panel); border-left: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
-  .side h3 { margin: 0; padding: 18px 20px 8px; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
-  .notes { padding: 0 20px 10px; max-height: 45%; overflow: auto; }
-  .notes ul { margin: 0; padding-left: 18px; } .notes li { margin: 4px 0; }
-  .notes .ver { color: var(--accent); font-weight: 600; margin-bottom: 4px; }
-  .log { flex: 1; margin: 0 12px 12px; padding: 10px 12px; background: var(--bg); border: 1px solid var(--line);
-    border-radius: 8px; overflow: auto; font: 12.5px/1.5 Consolas, monospace; color: #c9ced8; user-select: text; }
+  .side { background: rgba(10,12,16,.66); border-left: 1px solid var(--line); backdrop-filter: blur(10px);
+    display: flex; flex-direction: column; min-height: 0; }
+  .side h3 { margin: 0; padding: 14px 18px 6px; font-size: 11.5px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--muted); }
+  .notes { padding: 0 18px 8px; flex: 0 1 auto; max-height: 48%; overflow: auto; font-size: 13px; }
+  .notes ul { margin: 0; padding-left: 18px; } .notes li { margin: 3px 0; }
+  .notes .ver { color: var(--accent); font-weight: 700; margin-bottom: 3px; }
+  .log { flex: 1 1 0; min-height: 60px; margin: 0 12px 8px; padding: 8px 10px; background: rgba(0,0,0,.45);
+    border: 1px solid var(--line); border-radius: 8px; overflow: auto; font: 12px/1.5 Consolas, monospace;
+    color: #cfd4dc; user-select: text; }
   .log div { white-space: pre-wrap; }
-  .foot { padding: 8px 20px 12px; color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; }
+  .foot { padding: 4px 18px 10px; color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; }
   .foot a { color: var(--muted); cursor: pointer; } .foot a:hover { color: var(--accent); }
-  ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-thumb { background: #3a404c; border-radius: 4px; }
+  ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border-radius: 4px; }
 </style>
 </head>
 <body>
 <div class="app">
   <div class="main">
-    <div class="brand">BL2 <span>Arsenal</span></div>
+    <img class="logo" src="{{LOGO}}" alt="BL2 Arsenal">
     <div class="tag">140 Borderlands 2 guns, shields and grenades for The Pre-Sequel</div>
 
     <div class="status">
@@ -108,7 +115,7 @@
   }
   function setRow(key, ok, html) {
     $('d-' + key).className = 'dot ' + (ok === true ? 'ok' : ok === false ? 'bad' : ok === 'warn' ? 'warn' : '');
-    $('v-' + key).innerHTML = html;
+    $('v-' + key).innerHTML = html; $('v-' + key).title = $('v-' + key).textContent;
   }
   function log(msg) {
     const d = document.createElement('div'); d.textContent = msg;

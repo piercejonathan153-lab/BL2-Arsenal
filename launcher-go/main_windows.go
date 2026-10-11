@@ -4,6 +4,7 @@ package main
 
 import (
 	_ "embed"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -17,6 +18,20 @@ import (
 
 //go:embed ui.html
 var uiHTML string
+
+//go:embed assets/bg.webp
+var bgWebp []byte
+
+//go:embed assets/logo.webp
+var logoWebp []byte
+
+// Page size in CSS pixels; the window is scaled by the monitor's DPI so nothing gets cut off at 125%/150%.
+const pageW, pageH = 960, 620
+
+func pageHTML() string {
+	d := func(b []byte) string { return "data:image/webp;base64," + base64.StdEncoding.EncodeToString(b) }
+	return strings.NewReplacer("{{BG}}", d(bgWebp), "{{LOGO}}", d(logoWebp)).Replace(uiHTML)
+}
 
 type State struct {
 	LauncherVersion string   `json:"launcherVersion"`
@@ -66,7 +81,7 @@ func (a *App) emit(kind string, data interface{}) {
 	a.w.Dispatch(func() { a.w.Eval("window.onEvent && window.onEvent(" + string(b) + ")") })
 }
 func (a *App) log(format string, args ...interface{}) { a.emit("log", fmt.Sprintf(format, args...)) }
-func (a *App) refresh()                                { a.emit("state", a.state()) }
+func (a *App) refresh()                               { a.emit("state", a.state()) }
 
 // run does slow work off the UI thread, one job at a time.
 func (a *App) run(job func()) bool {
@@ -294,7 +309,7 @@ func main() {
 		AutoFocus: true,
 		DataPath:  filepath.Join(configDir(), "webview"),
 		WindowOptions: webview2.WindowOptions{
-			Title: "BL2 Arsenal Launcher", Width: 920, Height: 620, IconId: 1, Center: true,
+			Title: "BL2 Arsenal Launcher", Width: pageW, Height: pageH, IconId: 1, Center: true,
 		},
 	})
 	if w == nil {
@@ -307,7 +322,9 @@ func main() {
 	}
 	defer w.Destroy()
 	a.w = w
-	w.SetSize(920, 620, webview2.HintFixed)
+	cw, ch := scaledSize(uintptr(w.Window()), pageW, pageH)
+	w.SetSize(cw, ch, webview2.HintFixed)
+	centerWindow(uintptr(w.Window()))
 
 	must := func(err error) {
 		if err != nil {
@@ -333,6 +350,6 @@ func main() {
 		}
 	}))
 	must(w.Bind("ready", func() { a.checkUpdates(true) }))
-	w.SetHtml(uiHTML)
+	w.SetHtml(pageHTML())
 	w.Run()
 }
