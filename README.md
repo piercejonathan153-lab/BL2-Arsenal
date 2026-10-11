@@ -13,7 +13,7 @@ Full details, console commands and the complete item list: [docs/MOD_README.md](
   Items from a BL2 DLC only unlock if you own that DLC.
 
 ## Install with the launcher (recommended)
-1. Download **BL2-Arsenal-Launcher.zip** from the [latest release](https://github.com/piercejonathan153-lab/BL2-Arsenal/releases/latest)
+1. Download **[BL2-Arsenal-Launcher.zip](https://github.com/piercejonathan153-lab/BL2-Arsenal/raw/main/releases/BL2-Arsenal-Launcher.zip)**
    and unzip it anywhere (inside your TPS folder is handy).
 2. Double-click **BL2 Arsenal Launcher.cmd**.
 3. Click **Install** - the launcher finds TPS through Steam, downloads the latest version and installs it.
@@ -23,7 +23,7 @@ and updates in one click. **PLAY** starts the game through Steam. It also has **
 and **Choose game folder...** for non-standard installs. It only uses the PowerShell built into Windows 10/11.
 
 ## Manual install
-Download `bl2_arsenal_vX.Y.Z.sdkmod` from the [latest release](https://github.com/piercejonathan153-lab/BL2-Arsenal/releases/latest)
+Download the newest `bl2_arsenal_vX.Y.Z.sdkmod` from the [releases folder](releases/)
 and put it in `<TPS>/sdk_mods/` (remove any older `bl2_arsenal` folder or `.sdkmod` first).
 
 ## Notes

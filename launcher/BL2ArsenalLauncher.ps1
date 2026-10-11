@@ -158,9 +158,14 @@ function Refresh-Status {
 }
 
 function Get-Latest {
-    $uri = "https://api.github.com/repos/$Owner/$Repo/releases/latest"
-    $r = Invoke-RestMethod -Uri $uri -Headers @{ 'User-Agent' = 'BL2ArsenalLauncher'; 'Accept' = 'application/vnd.github+json' }
-    return $r
+    # the repo's latest.json says which version is current; the .sdkmod sits next to it in releases/
+    $base = "https://raw.githubusercontent.com/$Owner/$Repo/main"
+    $j = Invoke-RestMethod -Uri ("$base/latest.json?t=" + [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) -Headers @{ 'User-Agent' = 'BL2ArsenalLauncher'; 'Cache-Control' = 'no-cache' }
+    return [pscustomobject]@{
+        tag_name = "v$($j.version)"; name = "BL2 Arsenal v$($j.version)"; body = ($j.notes -join "`n")
+        launcher_version = $j.launcher_version
+        assets = @([pscustomobject]@{ name = $j.file; size = $j.size; browser_download_url = "$base/releases/$($j.file)"; sha256 = $j.sha256 })
+    }
 }
 
 function Check-Updates($quiet) {
@@ -168,8 +173,11 @@ function Check-Updates($quiet) {
         Say 'Checking GitHub for the latest version...'
         $script:latest = Get-Latest
         $asset = $script:latest.assets | Where-Object { $_.name -like '*.sdkmod' } | Select-Object -First 1
-        if (-not $asset) { Say 'The latest release has no .sdkmod file attached.'; return }
+        if (-not $asset) { Say 'The update info has no .sdkmod listed.'; return }
         Say ("Latest: {0}  ({1})" -f $script:latest.tag_name, $script:latest.name)
+        if ($script:latest.launcher_version -and ((Parse-Version $script:latest.launcher_version) -gt (Parse-Version $LauncherVersion))) {
+            Say "A newer launcher (v$($script:latest.launcher_version)) is available: https://github.com/$Owner/$Repo/raw/main/releases/BL2-Arsenal-Launcher.zip"
+        }
         if ($script:latest.body) { Say ''; Say ($script:latest.body -replace "`r?`n", "`r`n"); Say '' }
     } catch {
         if (-not $quiet) { Say "Couldn't reach GitHub: $($_.Exception.Message)" } else { Say 'Update check skipped (offline?).' }
@@ -213,6 +221,9 @@ $bInstall.Add_Click({
     try {
         Say "Downloading $($asset.name) ($([math]::Round($asset.size / 1MB, 2)) MB)..."
         Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $dl -UseBasicParsing -Headers @{ 'User-Agent' = 'BL2ArsenalLauncher' }
+        if ($asset.sha256 -and ((Get-FileHash $dl -Algorithm SHA256).Hash -ne $asset.sha256.ToUpper())) {
+            Say 'The download was damaged (checksum mismatch) - nothing was changed. Try again.'; return
+        }
         Install-Sdkmod $dl | Out-Null
     } catch { Say "Download failed: $($_.Exception.Message)" }
     finally { Remove-Item $dl -Force -ErrorAction SilentlyContinue }
