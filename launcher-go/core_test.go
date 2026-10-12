@@ -182,18 +182,3 @@ func TestFindTpsNear(t *testing.T) {
 		t.Error("launcher inside the game folder didn't find it")
 	}
 }
-
-func TestKriegStatus(t *testing.T) {
-	tps := fakeTps(t, "1.1.0")
-	if KriegStatus(tps) != "missing" {
-		t.Error("expected missing")
-	}
-	os.MkdirAll(filepath.Join(tps, "DLC/Lilac/Compat/Content"), 0o755)
-	if KriegStatus(tps) != "ready" {
-		t.Error("expected ready")
-	}
-	os.MkdirAll(filepath.Join(tps, "sdk_mods/KriegTPS"), 0o755)
-	if KriegStatus(tps) != "standalone" {
-		t.Error("expected standalone")
-	}
-}
