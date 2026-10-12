@@ -73,6 +73,7 @@
       <div class="row"><i class="dot" id="d-tps"></i><span class="k">Pre-Sequel</span><span class="v" id="v-tps">Looking...</span></div>
       <div class="row"><i class="dot" id="d-sdk"></i><span class="k">Mod manager</span><span class="v" id="v-sdk"></span></div>
       <div class="row"><i class="dot" id="d-bl2"></i><span class="k">Borderlands 2</span><span class="v" id="v-bl2"></span></div>
+      <div class="row"><i class="dot" id="d-krieg"></i><span class="k">Krieg</span><span class="v" id="v-krieg"></span></div>
       <div class="row"><i class="dot" id="d-ver"></i><span class="k">BL2 Arsenal</span><span class="v" id="v-ver"></span></div>
     </div>
 
@@ -129,6 +130,10 @@
       : 'Missing &mdash; <a data-url="https://github.com/bl-sdk/willow2-mod-manager/releases">download it</a>');
     setRow('bl2', !!s.bl2, s.bl2 ? esc(s.bl2) : 'Not found &mdash; the mod builds its textures and sounds from your BL2 install');
 
+    const kt = {ready: [true, 'Ready &mdash; pick him on the character select screen'],
+      standalone: ['warn', 'Using the separate KriegTPS mod (delete sdk_mods\\KriegTPS to use the built-in one)'],
+      missing: [null, 'Needs his files missing: [null, 'Needs his character files &mdash; install Krieg once with Vault Launcher']mdash; install Krieg once with Vault Launcher']}[s.krieg] || [null, '&mdash;'];
+    setRow('krieg', s.tpsOk ? kt[0] : null, s.tpsOk ? kt[1] : '&mdash;');
     const inst = s.installed, latest = s.latest;
     const outdated = inst && latest && newer(latest, inst);
     let ver = !s.tpsOk ? '&mdash;' : inst ? 'v' + esc(inst) : 'Not installed';
