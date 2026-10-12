@@ -132,7 +132,7 @@
 
     const kt = {ready: [true, 'Ready &mdash; pick him on the character select screen'],
       standalone: ['warn', 'Using the separate KriegTPS mod (delete sdk_mods\\KriegTPS to use the built-in one)'],
-      missing: [null, 'Needs his files missing: [null, 'Needs his character files &mdash; install Krieg once with Vault Launcher']mdash; install Krieg once with Vault Launcher']}[s.krieg] || [null, '&mdash;'];
+      missing: [null, 'Built from your BL2 (Psycho Pack) the next time the game starts']}[s.krieg] || [null, '&mdash;'];
     setRow('krieg', s.tpsOk ? kt[0] : null, s.tpsOk ? kt[1] : '&mdash;');
     const inst = s.installed, latest = s.latest;
     const outdated = inst && latest && newer(latest, inst);
