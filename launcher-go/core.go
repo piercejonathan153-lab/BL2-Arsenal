@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	LauncherVersion = "2.1.1"
+	LauncherVersion = "2.2.0"
 	Owner           = "piercejonathan153-lab"
 	Repo            = "BL2-Arsenal"
 	ModFolder       = "bl2_arsenal"

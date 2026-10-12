@@ -3,7 +3,7 @@
   "RT_MANIFEST": {
     "#1": {
       "0409": {
-        "identity": { "name": "BL2Arsenal.Launcher", "version": "2.1.1.0" },
+        "identity": { "name": "BL2Arsenal.Launcher", "version": "2.2.0.0" },
         "description": "BL2 Arsenal Launcher",
         "minimum-os": "win10",
         "execution-level": "as invoker",
@@ -25,16 +25,16 @@
   "RT_VERSION": {
     "#1": {
       "0000": {
-        "fixed": { "file_version": "2.1.1.0", "product_version": "2.1.1.0" },
+        "fixed": { "file_version": "2.2.0.0", "product_version": "2.2.0.0" },
         "info": {
           "0409": {
             "CompanyName": "piercejonathan153",
             "FileDescription": "BL2 Arsenal Launcher",
-            "FileVersion": "2.1.1",
+            "FileVersion": "2.2.0",
             "InternalName": "BL2ArsenalLauncher",
             "OriginalFilename": "BL2ArsenalLauncher.exe",
             "ProductName": "BL2 Arsenal",
-            "ProductVersion": "2.1.1",
+            "ProductVersion": "2.2.0",
             "LegalCopyright": "Fan mod; Borderlands is a trademark of Gearbox Software. Not affiliated."
           }
         }
