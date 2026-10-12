@@ -136,15 +136,17 @@
     setRow('krieg', s.tpsOk ? kt[0] : null, s.tpsOk ? kt[1] : '&mdash;');
     const inst = s.installed, latest = s.latest;
     const outdated = inst && latest && newer(latest, inst);
+    const ahead = inst && latest && newer(inst, latest);
     let ver = !s.tpsOk ? '&mdash;' : inst ? 'v' + esc(inst) : 'Not installed';
-    if (inst && latest && !outdated) ver += ' &middot; up to date';
+    if (ahead) ver += ' &middot; newer than the released v' + esc(latest);
+    else if (inst && latest && !outdated) ver += ' &middot; up to date';
     if (outdated) ver += ' &middot; <b style="color:var(--accent)">v' + esc(latest) + ' available</b>';
     setRow('ver', !s.tpsOk ? null : !inst ? false : outdated ? 'warn' : s.checked ? true : null, ver);
 
     const main = $('b-main');
     main.classList.toggle('hot', !inst || outdated);
-    main.textContent = !inst ? (latest ? 'Install v' + latest : 'Install') : outdated ? 'Update to v' + latest : 'Repair';
-    main.disabled = s.busy || !s.tpsOk;
+    main.textContent = !inst ? (latest ? 'Install v' + latest : 'Install') : outdated ? 'Update to v' + latest : ahead ? 'Up to date' : 'Repair';
+    main.disabled = s.busy || !s.tpsOk || ahead;
     $('b-play').disabled = !s.tpsOk;
     for (const id of ['b-check', 'b-file', 'b-game', 'b-uninstall', 'b-launcher']) $(id).disabled = s.busy;
     $('b-file').disabled = s.busy || !s.tpsOk;

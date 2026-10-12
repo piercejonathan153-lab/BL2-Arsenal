@@ -167,6 +167,10 @@ func (a *App) installLatest() {
 			a.feed = f
 			a.mu.Unlock()
 		}
+		if inst := InstalledVersion(a.cfg.TpsPath); Newer(inst, f.Version) {
+			a.log("Your BL2 Arsenal (v%s) is newer than the released v%s - nothing to do.", inst, f.Version)
+			return
+		}
 		tmp := filepath.Join(os.TempDir(), f.File)
 		defer os.Remove(tmp)
 		a.log("Downloading v%s (%.1f MB)...", f.Version, float64(f.Size)/1e6)
