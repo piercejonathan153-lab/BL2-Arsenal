@@ -45,7 +45,6 @@ type State struct {
 	Checked         bool     `json:"checked"`
 	LauncherUpdate  string   `json:"launcherUpdate"`
 	Busy            bool     `json:"busy"`
-	Krieg           string   `json:"krieg"`
 }
 
 type App struct {
@@ -66,7 +65,6 @@ func (a *App) state() State {
 	if s.TpsOk {
 		s.SdkOk = HasModManager(s.Tps)
 		s.Installed = InstalledVersion(s.Tps)
-		s.Krieg = KriegStatus(s.Tps)
 	}
 	if a.feed != nil {
 		s.Checked, s.Latest, s.Notes = true, a.feed.Version, a.feed.Notes

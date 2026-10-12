@@ -105,21 +105,6 @@ func looseSdkmods(tps string) []string {
 	return m
 }
 
-// KriegStatus says how the Krieg part of BL2 Arsenal can run: "standalone" (the separate KriegTPS mod is
-// installed and used instead), "ready" (his character files from Vault Launcher are in DLC\Lilac) or "missing".
-func KriegStatus(tps string) string {
-	if st, err := os.Stat(filepath.Join(tps, "sdk_mods", "KriegTPS")); err == nil && st.IsDir() {
-		return "standalone"
-	}
-	if m, _ := filepath.Glob(filepath.Join(tps, "sdk_mods", "KriegTPS*.sdkmod")); len(m) > 0 {
-		return "standalone"
-	}
-	if st, err := os.Stat(filepath.Join(tps, "DLC", "Lilac", "Compat", "Content")); err == nil && st.IsDir() {
-		return "ready"
-	}
-	return "missing"
-}
-
 // FindTpsNear walks up from dir looking for the game folder (for a launcher kept inside the TPS folder).
 func FindTpsNear(dir string) string {
 	for i := 0; i < 4 && dir != ""; i++ {
